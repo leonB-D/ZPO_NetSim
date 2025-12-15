@@ -19,16 +19,14 @@ add_executable(netsim ${SOURCE_FILES} main_debug.cpp)
 
 # GTEST
 
-#target_include_directories(netsim_test
-#
-#)
+add_subdirectory(../googletest-1.17.0 cmake-build-gtest)
 
 set(SOURCE_FILES_TEST
         src/tests.cpp
 )
 
-#add_subdirectory(
-#
-#)
-
 add_executable(netsim_test ${SOURCE_FILES} ${SOURCE_FILES_TEST} main_gtest.cpp)
+
+target_link_libraries(netsim_test
+        GTest::gtest
+)

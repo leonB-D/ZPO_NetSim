@@ -1,4 +1,4 @@
-#include "include/helpers.hxx"
+#include "helpers.hxx"
 
 #include <cstdlib>
 #include <random>
