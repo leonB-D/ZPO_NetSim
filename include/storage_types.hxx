@@ -6,3 +6,7 @@ enum class PackageQueueType {
 class IPackageStockpile {
 
 };
+
+class IPackageQueue {
+
+};

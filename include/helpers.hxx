@@ -6,6 +6,8 @@
 
 #include "types.hxx"
 
+using ProbabilityGenerator = std::function<double()>;
+
 extern std::random_device rd;
 extern std::mt19937 rng;
 
