@@ -2,7 +2,9 @@
 #define NODES_HXX
 
 #include <optional>
-#include <cstdio>
+#include <memory>
+#include <map>
+#include "helpers.hxx"
 #include "package.hxx"
 #include "storage_types.hxx"
 
@@ -11,21 +13,23 @@ using Time = int;
 using TimeOffset = int;
 
 
-class IPackageReceiver{
+class IPackageReceiver {
 public:
-    void recieve_package(Package&& p);
+    void receive_package(Package&& p);
     ElementID get_id();
 };
 
-class ReceiverPreferences{
+class ReceiverPreferences {
+    using preferences_t = std::map<IPackageReceiver*, double>;
+    using const_iterator = preferences_t::const_iterator;
 public:
-    ProbabilityGenerator preferences_t;
+    preferences_t preferences_;
 
     ReceiverPreferences(ProbabilityGenerator pg);
     void add_receiver(IPackageReceiver* r);
     void remove_receiver(IPackageReceiver* r);
     IPackageReceiver* choose_receiver();
-    void get_preferences();
+    preferences_t& get_preferences();
 };
 
 class PackageSender {
@@ -39,7 +43,7 @@ protected:
     void push_package(Package&&);
 };
 
-class Ramp : public PackageSender{
+class Ramp : public PackageSender {
 public:
     Ramp(ElementID id, TimeOffset di);
     void deliver_goods(Time t);
@@ -47,7 +51,7 @@ public:
     ElementID get_id();
 };
 
-class Worker : public PackageSender{
+class Worker : public PackageSender {
 public:
     Worker(ElementID id, TimeOffset pd, std::unique_ptr<IPackageQueue> q);
     void do_work(Time t);
@@ -55,7 +59,7 @@ public:
     Time get_package_processing_start_time();
 };
 
-class Storehouse{
+class Storehouse {
 public:
     Storehouse(ElementID id, std::unique_ptr<IPackageQueue> d);
 };
