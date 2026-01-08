@@ -19,10 +19,11 @@ add_executable(netsim ${SOURCE_FILES} main_debug.cpp)
 
 # GTEST
 
-add_subdirectory(../googletest-1.17.0 cmake-build-gtest)
+add_subdirectory(googletest-1.17.0 cmake-build-gtest)
 
 set(SOURCE_FILES_TEST
         src/tests.cpp
+        include/factory.hxx
 )
 
 add_executable(netsim_test ${SOURCE_FILES} ${SOURCE_FILES_TEST} main_gtest.cpp)
