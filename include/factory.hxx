@@ -22,7 +22,8 @@ class Factory
             return ramps.find_by_id(id);
         }
 
-        NodeCollection<Ramp>::const_iterator find_ramp_by_id(ElementID id) const {
+        NodeCollection<Ramp>::const_iterator find_ramp_by_id(ElementID id) const 
+        {
             return ramps.find_by_id(id);
         }
         NodeCollection<Ramp>::iterator ramp_begin() { return ramps.begin(); }
@@ -71,7 +72,6 @@ class Factory
             return storehouses.find_by_id(id);
         }
 
-
         NodeCollection<Storehouse>::iterator storehouse_begin() { return storehouses.begin(); }
         NodeCollection<Storehouse>::iterator storehouse_end() { return storehouses.end(); }
         NodeCollection<Storehouse>::const_iterator storehouse_cbegin() const { return storehouses.cbegin(); }
@@ -81,14 +81,113 @@ class Factory
         void do_deliveries(Time t);
         void do_work(Time t);
         void do_package_passing();
+
     protected:
-    NodeCollection<Ramp> ramps;
-    NodeCollection<Worker> workers;
-    NodeCollection<Storehouse> storehouses;
+    
+        template <typename Node>
+        void remove_receiver(NodeCollection<Node>& collection, ElementID id);
+        NodeCollection<Ramp> ramps;
+        NodeCollection<Worker> workers;
+        NodeCollection<Storehouse> storehouses;
 
 
-    template <typename Node>
-    void remove_receiver(NodeCollection<Node>& collection, ElementID id);
 };
+
+template<class Node>
+void Factory::remove_receiver(collection: NodeCollection<Node>&, id: ElementID)
+{
+    auto iter = collection.find_by_id(id);
+    auto receiver_ptr = dynamic_cast(iter);
+
+    for (auto& ramp: cont_r) 
+    {
+        auto& _preferences = ramp.receiver_preferences_.get_preferences();
+        for (auto _preference:_preferences) 
+        {
+            if (_preference.first == receiver_ptr) 
+            {
+                ramp.receiver_preferences_.remove_receiver(receiver_ptr);
+                break;
+            }
+        }
+
+        for (auto& worker: cont_w) 
+        {
+            auto& _preferences = worker.receiver_preferences_.get_preferences();
+            for (auto _preference: _preferences) 
+            {
+                if (_preference.first == receiver_ptr) 
+                {
+                    worker.receiver_preferences_.remove_receiver(receiver_ptr);
+                    break;
+                }
+
+            }
+        }
+    }
+
+    enum class ElementType
+    {
+    RAMP, WORKER, STOREHOUSE, LINK
+    };
+
+    struct ParsedLineData 
+    {
+        ElementType element_type;
+        std::map parameters;
+    };
+
+    ParsedLineData parse_line(std::string& line);
+    Factory load_factory_structure(std::istream& is);
+}
+
+
+
+template<class Node>
+class NodeCollection
+{
+public:
+    using container_t = std::list<Node>;
+    using iterator = typename container_t::iterator;
+    using const_iterator = typename container_t::const_iterator;
+
+    void add(Node&& node)
+    {
+        container.emplace_back(std::move(node));
+    }
+    void remove_by_id(ElementID id) {
+        iterator ITD = find_by_id(id);
+        if (ITD !=container.end())
+        {
+            container.erase(ITD);
+        }
+    }
+
+    iterator find_by_id(ElementID id) {
+        return std::find_if(container.begin(), container.end(),
+            [id](const Node& elem) {
+                return elem.get_id() == id;
+            });
+    }
+    const_iterator find_by_id(ElementID id) const
+    {
+        return std::find_if(container.begin(), container.end(),
+            [id](const Node& elem) {
+                return elem.get_id() == id;
+            });
+    }
+    iterator begin() { return container.begin(); }
+    iterator end() {return container.end();}
+
+    const_iterator begin() const { return container.cbegin(); }
+    const_iterator end() const { return container.cend(); }
+
+    const_iterator cbegin() const {return container.cbegin();}
+    const_iterator cend() const { return container.cend();}
+
+private:
+    container_t container;
+};
+
 
 #endif //ZPO_NETSIM_FACTORY_HXX

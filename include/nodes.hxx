@@ -13,58 +13,14 @@
 
 
 
-template<class Node>
-class NodeCollection
-{
-public:
-    using container_t = std::list<Node>;
-    using iterator = typename container_t::iterator;
-    using const_iterator = typename container_t::const_iterator;
-
-    void add(Node&& node)
-    {
-        container.emplace_back(std::move(node));
-    }
-    void remove_by_id(ElementID id) {
-        iterator it = find_by_id(id);
-        if (it !=container.end())
-        {
-            container.erase(it);
-        }
-    }
-
-    iterator find_by_id(ElementID id) {
-        return std::find_if(container.begin(), container.end(),
-            [id](const Node& elem) {
-                return elem.get_id() == id;
-            });
-    }
-    const_iterator find_by_id(ElementID id) const
-    {
-        return std::find_if(container.begin(), container.end(),
-            [id](const Node& elem) {
-                return elem.get_id() == id;
-            });
-    }
-    iterator begin() { return container.begin(); }
-    iterator end() {return container.end();}
-
-    const_iterator begin() const { return container.cbegin(); }
-    const_iterator end() const { return container.cend(); }
-
-    const_iterator cbegin() const {return container.cbegin();}
-    const_iterator cend() const { return container.cend();}
-
-private:
-    container_t container;
-};
-
 
 enum class ReceiverType {
     WORKER, STOREHOUSE
 };
 
-
+enum class NodeColor { UNVISITED, VISITED, VERIFIED };
+bool has_reachable_storehouse(const PackageSender* sender, std::map<const PackageSender*, NodeColor>& node_colors);
+bool Factory::is_consistent();
 
 class IPackageReceiver
 {
