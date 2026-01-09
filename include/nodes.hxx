@@ -31,7 +31,9 @@ public:
     preferences_t preferences_;
     ProbabilityGenerator pg_;
 
-    explicit ReceiverPreferences(ProbabilityGenerator pg) : pg_(std::move(pg)) {}
+    explicit ReceiverPreferences(ProbabilityGenerator pg = probability_generator)
+        : pg_(std::move(pg)) {};
+
     void add_receiver(IPackageReceiver* r);
     void remove_receiver(IPackageReceiver* r);
     IPackageReceiver* choose_receiver();
@@ -58,7 +60,7 @@ public:
     TimeOffset time_offset_;
 
     Ramp(ElementID id, TimeOffset di)
-        : PackageSender(), id_(id), time_offset_(di) {}
+        : PackageSender(), id_(id), time_offset_(di) {};
 
     void deliver_goods(Time t);
     TimeOffset get_delivery_interval();
@@ -72,7 +74,7 @@ public:
     std::unique_ptr<IPackageQueue> queue_;
 
     Worker(ElementID id, TimeOffset pd, std::unique_ptr<IPackageQueue> q)
-        : PackageSender(), id_(id), time_offset_(pd), queue_(std::move(q)) {}
+        : PackageSender(), id_(id), time_offset_(pd), queue_(std::move(q)) {};
 
     void do_work(Time t);
     TimeOffset get_processing_duration();
