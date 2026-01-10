@@ -1,24 +1,17 @@
 #include "types.hxx"
-
+#include <set>
 class Package {
 public:
 
-    Package();
-    explicit Package(ElementID id) : id_(id) {}
-    Package(Package&& other) noexcept : id_(other.id_) {
-        other.id_ = 0;
-    }
-    Package& operator=(Package&& other) noexcept;
-
-
-    Package(const Package&) = delete;
-    Package& operator=(const Package&) = delete;
-
+    Package() = default;
+    explicit Package(ElementID id) : id_(id) { assigned_ids.insert(id); }
+    Package(Package&& package) : id_(package.id_) {}
+    Package& operator=(Package&& package) noexcept;
     ElementID get_id() const { return id_; }
-
     ~Package() = default;
 
 private:
     ElementID id_;
-
+    static std::set<ElementID> assigned_ids;
+    static std::set<ElementID> freed_ids;
 };
