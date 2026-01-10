@@ -19,3 +19,8 @@ Package::~Package() {
     assigned_ids.erase(id_);
     freed_ids.insert(id_);
 }
+
+Package::Package& operator=(Package$$ package) noexcept {
+
+
+}
