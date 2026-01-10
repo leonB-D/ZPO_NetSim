@@ -3,12 +3,12 @@
 class Package {
 public:
 
-    Package() = default;
+    Package();
     explicit Package(ElementID id) : id_(id) { assigned_ids.insert(id); }
     Package(Package&& package) : id_(package.id_) {}
     Package& operator=(Package&& package) noexcept;
     ElementID get_id() const { return id_; }
-    ~Package() = default;
+    ~Package();
 
 private:
     ElementID id_;
