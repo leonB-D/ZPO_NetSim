@@ -20,7 +20,14 @@ Package::~Package() {
     freed_ids.insert(id_);
 }
 
-Package::Package& operator=(Package$$ package) noexcept {
+Package::Package& operator=(Package&& package) noexcept {
+    if (this == &package) return *this;
 
+    assigned_ids.erase(this->id_);
+    freed_ids.insert(this->id_);
 
+    this->id_ = package.id_;
+    
+
+    return *this;
 }
