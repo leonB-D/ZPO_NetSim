@@ -22,24 +22,25 @@ enum class NodeColor { UNVISITED, VISITED, VERIFIED };
 bool has_reachable_storehouse(const PackageSender* sender, std::map<const PackageSender*, NodeColor>& node_colors);
 bool Factory::is_consistent();
 
-class IPackageReceiver
-{
+class IPackageReceiver{
 public:
-
-    virtual ~IPackageReceiver() = default;
     virtual void receive_package(Package&& p) = 0;
 
     virtual ElementID get_id() const = 0;
 
+    virtual IPackageStockpile::const_iterator cbegin() const = 0;
+
+    virtual IPackageStockpile::const_iterator cend() const = 0;
+
+    virtual IPackageStockpile::const_iterator begin() const = 0;
+
+    virtual IPackageStockpile::const_iterator end() const = 0;
+
     virtual ReceiverType get_receiver_type() const = 0;
 
-
-    using const_iterator = IPackageStockpile::const_iterator;
-    virtual const_iterator begin() const = 0;
-    virtual const_iterator end() const = 0;
-    virtual const_iterator cbegin() const = 0;
-    virtual const_iterator cend() const = 0;
+    virtual ~IPackageReceiver() = default;
 };
+
 
 
 
@@ -48,11 +49,9 @@ public:
     using preferences_t = std::map<IPackageReceiver*, double>;
     using const_iterator = preferences_t::const_iterator;
 
-    explicit ReceiverPreferences(ProbabilityGenerator pg = probability_generator) : generate_probability_(
-            std::move(pg)) {};
+    explicit ReceiverPreferences(ProbabilityGenerator pg = probability_generator) : generate_probability_(std::move(pg)) {};
 
     void add_receiver(IPackageReceiver* receiver);
-
     void remove_receiver(IPackageReceiver* receiver);
 
     IPackageReceiver* choose_receiver();
@@ -75,8 +74,6 @@ private:
     ProbabilityGenerator generate_probability_;
 };
 
-
-
 class PackageSender
 {
 public:
@@ -90,9 +87,10 @@ public:
 
     ReceiverPreferences receiver_preferences_;
 
-protected:
-    std::optional<Package> push_buffer_;
-    void push_package(Package&& package);
+    protected:
+    void push_package(Package&& moved_package) { buffer_.emplace(moved_package.get_id()); };
+
+    std::optional<Package> buffer_ = std::nullopt;
 };
 
 
@@ -108,14 +106,13 @@ private:
     ElementID id_;
     TimeOffset delivery_interval_;
     Time last_delivery_time_ = 0;
-}
+};
 
 
 
 class Worker : public PackageSender, public IPackageReceiver {
 public:
-    Worker(ElementID id, TimeOffset pd, std::unique_ptr<IPackageQueue> q)
-        : id_(id), processing_duration_(pd), queue_(std::move(q)) {}
+    Worker(ElementID id, TimeOffset pd, std::unique_ptr<IPackageQueue> q): id_(id), processing_duration_(pd), queue_(std::move(q)) {}
 
     void receive_package(Package&& p) override;
     ElementID get_id() const override { return id_; }
@@ -123,22 +120,38 @@ public:
     ReceiverType get_receiver_type() const override { return ReceiverType::WORKER; }
 
     void do_work(Time t);
-
     TimeOffset get_processing_duration() const { return processing_duration_; }
     Time get_package_processing_start_time() const { return package_processing_start_time_; }
 
-    const_iterator begin() const override { return queue_->begin(); }
-    const_iterator end() const override { return queue_->end(); }
-    const_iterator cbegin() const override { return queue_->cbegin(); }
-    const_iterator cend() const override { return queue_->cend(); }
+
+    IPackageStockpile::const_iterator cbegin() const override { return q_->cbegin(); }
+
+    IPackageStockpile::const_iterator cend() const override { return q_->cend(); }
+
+    IPackageStockpile::const_iterator begin() const override { return q_->begin(); }
+
+    IPackageStockpile::const_iterator end() const override { return q_->end(); }
+
+    IPackageQueue* get_queue() const { return q_.get(); }
+
 
 private:
-    ElementID id_;
+
     TimeOffset processing_duration_;
     std::unique_ptr<IPackageQueue> queue_;
 
     std::optional<Package> processing_buffer_;
     Time package_processing_start_time_ = 0;
+
+
+    ElementID id_;
+    TimeOffset pd_;
+
+
+    Time t_;
+    std::unique_ptr<IPackageQueue> q_;
+    std::optional<Package> buffer_ = std::nullopt;
+    //
 };
 
 
