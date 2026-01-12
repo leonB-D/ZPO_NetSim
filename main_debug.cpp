@@ -27,5 +27,5 @@ int main() {
     Package package7 = std::move(package6);
     std::cout<<package7.get_id()<<std::endl;
     // NIBY DZIAŁA
-    //ZROBIĆ PRAWILNE TESTY TYPU TEST(){}
+
 }
