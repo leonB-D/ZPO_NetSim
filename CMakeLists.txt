@@ -24,6 +24,7 @@ add_subdirectory(../googletest-1.17.0 cmake-build-gtest)
 
 set(SOURCE_FILES_TEST
         src/tests_package.cpp
+        src/tests_storage_types.cpp
 )
 
 add_executable(netsim_test ${SOURCE_FILES} ${SOURCE_FILES_TEST} main_gtest.cpp)
