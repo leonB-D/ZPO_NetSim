@@ -21,8 +21,11 @@ public:
     virtual const_iterator cend() const = 0;
 
 };
-class IPackageQueue {
-
+class IPackageQueue: public IPackageStockpile {
+public:
+    ~IPackageQueue() override = default;
+    virtual Package pop() = 0;
+    virtual PackageQueueType get_QueueType() const = 0;
 };
 class PackageQueue {
 
