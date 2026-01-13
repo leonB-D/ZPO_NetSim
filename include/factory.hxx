@@ -9,6 +9,54 @@
 #include "storage_types.hxx"
 #include "nodes.hxx"
 
+#include <map>
+
+template<class Node>
+class NodeCollection
+{
+public:
+    using container_t = std::list<Node>;
+    using iterator = typename container_t::iterator;
+    using const_iterator = typename container_t::const_iterator;
+
+    void add(Node&& node)
+    {
+        container.emplace_back(std::move(node));
+    }
+    void remove_by_id(ElementID id) {
+        iterator ITD = find_by_id(id);
+        if (ITD !=container.end())
+        {
+            container.erase(ITD);
+        }
+    }
+
+    iterator find_by_id(ElementID id) {
+        return std::find_if(container.begin(), container.end(),
+            [id](const Node& elem) {
+                return elem.get_id() == id;
+            });
+    }
+    const_iterator find_by_id(ElementID id) const
+    {
+        return std::find_if(container.begin(), container.end(),
+            [id](const Node& elem) {
+                return elem.get_id() == id;
+            });
+    }
+    iterator begin() { return container.begin(); }
+    iterator end() {return container.end();}
+
+    const_iterator begin() const { return container.cbegin(); }
+    const_iterator end() const { return container.cend(); }
+
+    const_iterator cbegin() const {return container.cbegin();}
+    const_iterator cend() const { return container.cend();}
+
+private:
+    container_t container;
+};
+
 class Factory
 {
     public:
@@ -94,100 +142,30 @@ class Factory
 };
 
 template<class Node>
-void Factory::remove_receiver(collection: NodeCollection<Node>&, id: ElementID)
-{
+void Factory::remove_receiver(NodeCollection<Node>& collection, ElementID id) {
     auto iter = collection.find_by_id(id);
-    auto receiver_ptr = dynamic_cast(iter);
+    if (iter == collection.end()) return;
 
-    for (auto& ramp: cont_r) 
-    {
-        auto& _preferences = ramp.receiver_preferences_.get_preferences();
-        for (auto _preference:_preferences) 
-        {
-            if (_preference.first == receiver_ptr) 
-            {
-                ramp.receiver_preferences_.remove_receiver(receiver_ptr);
-                break;
-            }
-        }
+    IPackageReceiver* receiver_ptr = dynamic_cast<IPackageReceiver*>(&(*iter));
 
-        for (auto& worker: cont_w) 
-        {
-            auto& _preferences = worker.receiver_preferences_.get_preferences();
-            for (auto _preference: _preferences) 
-            {
-                if (_preference.first == receiver_ptr) 
-                {
-                    worker.receiver_preferences_.remove_receiver(receiver_ptr);
-                    break;
-                }
 
-            }
-        }
+    for (auto& ramp : ramps) {
+        ramp.receiver_preferences_.remove_receiver(receiver_ptr);
     }
+
+    for (auto& worker : workers) {
+        worker.receiver_preferences_.remove_receiver(receiver_ptr);
+    }
+
+    collection.remove_by_id(id);
+
 
     enum class ElementType
     {
-    RAMP, WORKER, STOREHOUSE, LINK
+        RAMP, WORKER, STOREHOUSE, LINK
     };
-
-    struct ParsedLineData 
-    {
-        ElementType element_type;
-        std::map parameters;
-    };
-
     ParsedLineData parse_line(std::string& line);
     Factory load_factory_structure(std::istream& is);
 }
-
-
-
-template<class Node>
-class NodeCollection
-{
-public:
-    using container_t = std::list<Node>;
-    using iterator = typename container_t::iterator;
-    using const_iterator = typename container_t::const_iterator;
-
-    void add(Node&& node)
-    {
-        container.emplace_back(std::move(node));
-    }
-    void remove_by_id(ElementID id) {
-        iterator ITD = find_by_id(id);
-        if (ITD !=container.end())
-        {
-            container.erase(ITD);
-        }
-    }
-
-    iterator find_by_id(ElementID id) {
-        return std::find_if(container.begin(), container.end(),
-            [id](const Node& elem) {
-                return elem.get_id() == id;
-            });
-    }
-    const_iterator find_by_id(ElementID id) const
-    {
-        return std::find_if(container.begin(), container.end(),
-            [id](const Node& elem) {
-                return elem.get_id() == id;
-            });
-    }
-    iterator begin() { return container.begin(); }
-    iterator end() {return container.end();}
-
-    const_iterator begin() const { return container.cbegin(); }
-    const_iterator end() const { return container.cend(); }
-
-    const_iterator cbegin() const {return container.cbegin();}
-    const_iterator cend() const { return container.cend();}
-
-private:
-    container_t container;
-};
-
 
 #endif //ZPO_NETSIM_FACTORY_HXX
