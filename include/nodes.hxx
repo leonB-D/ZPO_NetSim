@@ -5,7 +5,6 @@
 #include <memory>
 #include <map>
 #include "helpers.hxx"
-#include "package.hxx"
 #include "storage_types.hxx"
 
 using ElementID = int;
@@ -15,13 +14,13 @@ using TimeOffset = int;
 
 class IPackageReceiver {
 public:
-    virtual void receive_package(Package&& p) = 0;
-    virtual ElementID get_id() const = 0;
-
-    virtual IPackageStockpile::const_iterator begin() const = 0;
-    virtual IPackageStockpile::const_iterator end() const = 0;
-    virtual IPackageStockpile::const_iterator cbegin() const = 0;
-    virtual IPackageStockpile::const_iterator cend() const = 0;
+//    virtual void receive_package(Package&& p) = 0;
+//    virtual ElementID get_id() const = 0;
+//
+//    virtual IPackageStockpile::const_iterator begin() const = 0;
+//    virtual IPackageStockpile::const_iterator end() const = 0;
+//    virtual IPackageStockpile::const_iterator cbegin() const = 0;
+//    virtual IPackageStockpile::const_iterator cend() const = 0;
 };
 
 class ReceiverPreferences {
@@ -79,6 +78,13 @@ public:
     void do_work(Time t);
     TimeOffset get_processing_duration();
     Time get_package_processing_start_time();
+
+//    void receive_package(Package&& p) override;
+//    ElementID get_id() const override;
+//    IPackageStockpile::const_iterator begin() const override;
+//    IPackageStockpile::const_iterator end() const override;
+//    IPackageStockpile::const_iterator cbegin() const override;
+//    IPackageStockpile::const_iterator cend() const override;
 };
 
 class Storehouse: public IPackageReceiver {
@@ -87,7 +93,14 @@ public:
     std::unique_ptr<IPackageQueue> queue_;
 
     Storehouse(ElementID id, std::unique_ptr<IPackageQueue> d)
-        : id_(id), queue_(std::move(d)) {}
+        : id_(id), queue_(std::move(d)) {};
+
+//    void receive_package(Package&& p) override;
+//    ElementID get_id() const override;
+//    IPackageStockpile::const_iterator begin() const override;
+//    IPackageStockpile::const_iterator end() const override;
+//    IPackageStockpile::const_iterator cbegin() const override;
+//    IPackageStockpile::const_iterator cend() const override;
 };
 
 #endif
