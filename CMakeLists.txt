@@ -4,6 +4,7 @@ project(ZPO_NetSim)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(
+
         include
 )
 
@@ -22,11 +23,15 @@ add_executable(netsim ${SOURCE_FILES} main_debug.cpp)
 add_subdirectory(../googletest-1.17.0 cmake-build-gtest)
 
 set(SOURCE_FILES_TEST
-        src/tests.cpp
+        src/tests_package.cpp
+        src/tests_storage_types.cpp
 )
 
 add_executable(netsim_test ${SOURCE_FILES} ${SOURCE_FILES_TEST} main_gtest.cpp)
-
+target_include_directories(netsim_test PUBLIC
+        ../googletest-1.17.0/googletest/include
+        ../googletest-1.17.0/googlemock/include
+)
 target_link_libraries(netsim_test
-        GTest::gtest
+        gtest
 )
