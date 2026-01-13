@@ -5,6 +5,7 @@
 #include "types.hxx"
 #include "package.hxx"
 #include "helpers.hxx"
+#include "factory.hxx"
 #include "storage_types.hxx"
 #include <optional>
 #include <memory>
