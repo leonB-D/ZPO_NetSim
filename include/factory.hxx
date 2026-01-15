@@ -130,8 +130,7 @@ class Factory
         void do_work(Time t);
         void do_package_passing();
 
-    protected:
-    
+    private:
         template <typename Node>
         void remove_receiver(NodeCollection<Node>& collection, ElementID id);
         NodeCollection<Ramp> ramps;
@@ -159,13 +158,10 @@ void Factory::remove_receiver(NodeCollection<Node>& collection, ElementID id) {
 
     collection.remove_by_id(id);
 
-
-    enum class ElementType
-    {
-        RAMP, WORKER, STOREHOUSE, LINK
-    };
-    ParsedLineData parse_line(std::string& line);
-    Factory load_factory_structure(std::istream& is);
 }
+enum class ElementType
+{
+    RAMP, WORKER, STOREHOUSE, LINK
+};
 
 #endif //ZPO_NETSIM_FACTORY_HXX

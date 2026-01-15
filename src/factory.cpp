@@ -1,7 +1,7 @@
 #include "factory.hxx"
 #include "nodes.hxx"
 #include <stdexcept>
-
+#include <sstream>
 
 bool has_reachable_storehouse(const PackageSender* sender, std::map<const PackageSender*, NodeColor>& node_colors)
 {
@@ -22,15 +22,22 @@ bool has_reachable_storehouse(const PackageSender* sender, std::map<const Packag
         if (receiver.first->get_receiver_type() == ReceiverType::STOREHOUSE)
         {
             return true;
-        } else if (receiver.first->get_receiver_type() == ReceiverType::WORKER)
+        }
+        else if (receiver.first->get_receiver_type() == ReceiverType::WORKER)
         {
-            PackageSender *sendptr = dynamic_cast(dynamic_cast(receiver.first));
-            if (sendptr == sender) {
+            IPackageReceiver* receiver_ptr = receiver.first;
+            auto worker_ptr = dynamic_cast<Worker*>(receiver_ptr);
+            auto sendrecv_ptr = dynamic_cast<PackageSender*>(worker_ptr);
+
+            if (sendrecv_ptr == sender)
+            {
                 continue;
             }
 
-            if (node_colors[sendptr] == NodeColor::UNVISITED && has_reachable_storehouse(sendptr, node_colors))
+
+            if (node_colors[sendrecv_ptr] == NodeColor::UNVISITED && has_reachable_storehouse(sendrecv_ptr, node_colors))
             {
+                has_reachable_storehouse(sendrecv_ptr, node_colors);
                 return true;
             }
         }
@@ -60,23 +67,24 @@ bool Factory::is_consistent()
     return true;
 }
 void Factory::do_deliveries(Time t) {
+    for (auto &ramp : cont_r)
+        ramp.deliver_goods(t);
+}
+
+void Factory::do_package_passing() {
+    for (auto &ramp : cont_r)
+        ramp.send_package();
+
+    for (auto &worker : cont_w)
+        worker.send_package();
+}
+
+void Factory::do_deliveries(Time t) {
     for (auto& ramp : ramps)
     {
         ramp.deliver_goods(t);
     }
 }
-
-
-void Factory::do_package_passing() {
-    for (auto& ramp : ramps) {
-        ramp.send_package();
-    }
-    for (auto& worker : workers) {
-        worker.send_package();
-    }
-}
-
-
 void Factory::do_work(Time t)
 {
     for (auto& worker : workers)
@@ -84,13 +92,17 @@ void Factory::do_work(Time t)
         worker.do_work(t);
     }
 }
-void Factory::remove_worker(ElementID id)
-{
-    remove_receiver(workers, id);
+std::vector<std::string> character_split(const std::string& splittable_str, char delimiter) {
+    std::stringstream parameter_stream(splittable_str);
+    std::string part;
+    std::vector<std::string> result;
+
+    while(std::getline(parameter_stream, part, delimiter)) {
+        result.push_back(part);
+    }
+
+    return result;
 }
 
-void Factory::remove_storehouse(ElementID id)
-{
-    remove_receiver(storehouses, id);
-}
+
 
