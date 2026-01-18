@@ -15,12 +15,12 @@ using TimeOffset = int;
 class IPackageReceiver {
 public:
 //    virtual void receive_package(Package&& p) = 0;
-//    virtual ElementID get_id() const = 0;
-//
+    virtual ElementID get_id() const = 0;
 //    virtual IPackageStockpile::const_iterator begin() const = 0;
 //    virtual IPackageStockpile::const_iterator end() const = 0;
 //    virtual IPackageStockpile::const_iterator cbegin() const = 0;
 //    virtual IPackageStockpile::const_iterator cend() const = 0;
+    virtual ~IPackageReceiver() = default;
 };
 
 class ReceiverPreferences {
@@ -80,7 +80,7 @@ public:
     Time get_package_processing_start_time();
 
 //    void receive_package(Package&& p) override;
-//    ElementID get_id() const override;
+    ElementID get_id() const override;
 //    IPackageStockpile::const_iterator begin() const override;
 //    IPackageStockpile::const_iterator end() const override;
 //    IPackageStockpile::const_iterator cbegin() const override;
@@ -96,7 +96,7 @@ public:
         : id_(id), queue_(std::move(d)) {};
 
 //    void receive_package(Package&& p) override;
-//    ElementID get_id() const override;
+    ElementID get_id() const override;
 //    IPackageStockpile::const_iterator begin() const override;
 //    IPackageStockpile::const_iterator end() const override;
 //    IPackageStockpile::const_iterator cbegin() const override;
