@@ -21,9 +21,10 @@ bool has_reachable_storehouse(const PackageSender* sender, std::map<const Packag
     {
         if (receiver.first->get_receiver_type() == ReceiverType::STOREHOUSE)
         {
+            node_colors[sender] = NodeColor::VERIFIED;
             return true;
         }
-        else if (receiver.first->get_receiver_type() == ReceiverType::WORKER)
+        if (receiver.first->get_receiver_type() == ReceiverType::WORKER)
         {
             IPackageReceiver* receiver_ptr = receiver.first;
             auto worker_ptr = dynamic_cast<Worker*>(receiver_ptr);
@@ -33,12 +34,13 @@ bool has_reachable_storehouse(const PackageSender* sender, std::map<const Packag
             {
                 continue;
             }
-
-
-            if (node_colors[sendrecv_ptr] == NodeColor::UNVISITED && has_reachable_storehouse(sendrecv_ptr, node_colors))
+            if (node_colors[sendrecv_ptr] == NodeColor::UNVISITED)
             {
-                has_reachable_storehouse(sendrecv_ptr, node_colors);
-                return true;
+                if (has_reachable_storehouse(sendrecv_ptr, node_colors))
+                {
+                    node_colors[sender] = NodeColor::VERIFIED;
+                    return true;
+                }
             }
         }
     }
@@ -46,7 +48,7 @@ bool has_reachable_storehouse(const PackageSender* sender, std::map<const Packag
     node_colors[sender] = NodeColor::VERIFIED;
     throw std::logic_error("Error");
 }
-bool Factory::is_consistent()
+bool Factory::is_consistent() const
 {
     std::map<const PackageSender*, NodeColor> node_colors;
     for (const auto& ramp : ramps) {
@@ -67,24 +69,18 @@ bool Factory::is_consistent()
     return true;
 }
 void Factory::do_deliveries(Time t) {
-    for (auto &ramp : cont_r)
+    for (auto &ramp : ramps)
         ramp.deliver_goods(t);
 }
 
 void Factory::do_package_passing() {
-    for (auto &ramp : cont_r)
+    for (auto &ramp : ramps)
         ramp.send_package();
 
-    for (auto &worker : cont_w)
+    for (auto &worker : workers)
         worker.send_package();
 }
 
-void Factory::do_deliveries(Time t) {
-    for (auto& ramp : ramps)
-    {
-        ramp.deliver_goods(t);
-    }
-}
 void Factory::do_work(Time t)
 {
     for (auto& worker : workers)

@@ -125,7 +125,7 @@ class Factory
         NodeCollection<Storehouse>::const_iterator storehouse_cbegin() const { return storehouses.cbegin(); }
         NodeCollection<Storehouse>::const_iterator storehouse_cend() const { return storehouses.cend(); }
 
-        bool is_consistent();
+        bool is_consistent() const;
         void do_deliveries(Time t);
         void do_work(Time t);
         void do_package_passing();
