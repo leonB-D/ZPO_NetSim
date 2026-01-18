@@ -37,6 +37,10 @@ public:
     void remove_receiver(IPackageReceiver* r);
     IPackageReceiver* choose_receiver();
     preferences_t& get_preferences() {return preferences_;}
+    const_iterator begin() const {return preferences_.begin();}
+    const_iterator end() const {return preferences_.end();}
+    const_iterator cbegin() const {return preferences_.cbegin();}
+    const_iterator cend() const {return preferences_.cend();}
 };
 
 class PackageSender {
@@ -55,29 +59,27 @@ protected:
 
 class Ramp : public PackageSender {
 public:
-    ElementID id_;
-    TimeOffset time_offset_;
-
     Ramp(ElementID id, TimeOffset di)
         : PackageSender(), id_(id), time_offset_(di) {};
 
     void deliver_goods(Time t);
-    TimeOffset get_delivery_interval();
-    ElementID get_id();
+    TimeOffset get_delivery_interval() {return time_offset_;}
+    ElementID get_id() {return id_;}
+
+private:
+    ElementID id_;
+    TimeOffset time_offset_;
+    Time start_time_ = 0;
 };
 
 class Worker : public PackageSender, public IPackageReceiver {
 public:
-    ElementID id_;
-    TimeOffset time_offset_;
-    std::unique_ptr<IPackageQueue> queue_;
-
     Worker(ElementID id, TimeOffset pd, std::unique_ptr<IPackageQueue> q)
         : PackageSender(), id_(id), time_offset_(pd), queue_(std::move(q)) {};
 
     void do_work(Time t);
-    TimeOffset get_processing_duration();
-    Time get_package_processing_start_time();
+    TimeOffset get_processing_duration() {return time_offset_;}
+    Time get_package_processing_start_time() {return start_time_;}
 
     void receive_package(Package&& p) override {queue_->push(std::move(p));}
     ElementID get_id() const override {return id_;}
@@ -85,13 +87,16 @@ public:
     IPackageStockpile::const_iterator end() const override {return queue_->end();}
     IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
     IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
+
+private:
+    ElementID id_;
+    TimeOffset time_offset_;
+    Time start_time_ = 0;
+    std::unique_ptr<IPackageQueue> queue_;
 };
 
 class Storehouse: public IPackageReceiver {
 public:
-    ElementID id_;
-    std::unique_ptr<IPackageQueue> queue_;
-
     Storehouse(ElementID id, std::unique_ptr<IPackageQueue> d)
         : id_(id), queue_(std::move(d)) {};
 
@@ -101,6 +106,10 @@ public:
     IPackageStockpile::const_iterator end() const override {return queue_->end();}
     IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
     IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
+
+private:
+    ElementID id_;
+    std::unique_ptr<IPackageQueue> queue_;
 };
 
 #endif

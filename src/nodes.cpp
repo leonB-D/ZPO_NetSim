@@ -36,7 +36,7 @@ void ReceiverPreferences::remove_receiver(IPackageReceiver *r) {
     preferences_.erase(r);
 
     for (auto item : preferences_) {
-        preferences_[item.first] *= p_sum;
+        preferences_[item.first] /= p_sum;
     }
 }
 
@@ -50,4 +50,24 @@ IPackageReceiver* ReceiverPreferences::choose_receiver() {
     }
 
     return nullptr;
+}
+
+void Ramp::deliver_goods(Time t) {
+    if (!buffer.has_value()) start_time_ = t;
+
+    if (buffer.has_value() && t >= start_time_ + time_offset_) {
+        this->send_package();
+    }
+}
+
+void Worker::do_work(Time t) {
+    if (!buffer.has_value()) {
+        start_time_ = t;
+        if (queue_) push_package(queue_->pop());
+    }
+
+    if (buffer.has_value() && t >= start_time_ + time_offset_) {
+        this->send_package();
+        if (queue_) push_package(queue_->pop());
+    }
 }
