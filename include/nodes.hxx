@@ -14,12 +14,12 @@ using TimeOffset = int;
 
 class IPackageReceiver {
 public:
-//    virtual void receive_package(Package&& p) = 0;
+    virtual void receive_package(Package&& p) = 0;
     virtual ElementID get_id() const = 0;
-//    virtual IPackageStockpile::const_iterator begin() const = 0;
-//    virtual IPackageStockpile::const_iterator end() const = 0;
-//    virtual IPackageStockpile::const_iterator cbegin() const = 0;
-//    virtual IPackageStockpile::const_iterator cend() const = 0;
+    virtual IPackageStockpile::const_iterator begin() const = 0;
+    virtual IPackageStockpile::const_iterator end() const = 0;
+    virtual IPackageStockpile::const_iterator cbegin() const = 0;
+    virtual IPackageStockpile::const_iterator cend() const = 0;
     virtual ~IPackageReceiver() = default;
 };
 
@@ -36,7 +36,7 @@ public:
     void add_receiver(IPackageReceiver* r);
     void remove_receiver(IPackageReceiver* r);
     IPackageReceiver* choose_receiver();
-    preferences_t& get_preferences();
+    preferences_t& get_preferences() {return preferences_;}
 };
 
 class PackageSender {
@@ -45,9 +45,9 @@ public:
     PackageSender(PackageSender&& other) = default;
 
     void send_package();
-    std::optional<Package>& get_sending_buffer();
+    std::optional<Package>& get_sending_buffer() {return buffer;}
 
-    //ReceiverPreferences receiver_preferences_;
+    ReceiverPreferences receiver_preferences_;
 protected:
     std::optional<Package> buffer = std::nullopt;
     void push_package(Package&& p);
@@ -79,12 +79,12 @@ public:
     TimeOffset get_processing_duration();
     Time get_package_processing_start_time();
 
-//    void receive_package(Package&& p) override;
-    ElementID get_id() const override;
-//    IPackageStockpile::const_iterator begin() const override;
-//    IPackageStockpile::const_iterator end() const override;
-//    IPackageStockpile::const_iterator cbegin() const override;
-//    IPackageStockpile::const_iterator cend() const override;
+    void receive_package(Package&& p) override {queue_->push(std::move(p));}
+    ElementID get_id() const override {return id_;}
+    IPackageStockpile::const_iterator begin() const override {return queue_->begin();}
+    IPackageStockpile::const_iterator end() const override {return queue_->end();}
+    IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
+    IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
 };
 
 class Storehouse: public IPackageReceiver {
@@ -95,12 +95,12 @@ public:
     Storehouse(ElementID id, std::unique_ptr<IPackageQueue> d)
         : id_(id), queue_(std::move(d)) {};
 
-//    void receive_package(Package&& p) override;
-    ElementID get_id() const override;
-//    IPackageStockpile::const_iterator begin() const override;
-//    IPackageStockpile::const_iterator end() const override;
-//    IPackageStockpile::const_iterator cbegin() const override;
-//    IPackageStockpile::const_iterator cend() const override;
+    void receive_package(Package&& p) override {queue_->push(std::move(p));}
+    ElementID get_id() const override {return id_;}
+    IPackageStockpile::const_iterator begin() const override {return queue_->begin();}
+    IPackageStockpile::const_iterator end() const override {return queue_->end();}
+    IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
+    IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
 };
 
 #endif

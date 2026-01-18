@@ -3,12 +3,14 @@
 #include "nodes.hxx"
 
 void PackageSender::push_package(Package&& p) {
-    //this->buffer = p;
+    this->buffer = std::move(p);
 }
 
 void PackageSender::send_package() {
-    this->buffer = std::nullopt;
-    //przesyłanie dalej
+    if (this->buffer.has_value()) {
+        receiver_preferences_.choose_receiver()->receive_package(std::move(*this->buffer));
+        this->buffer = std::nullopt;
+    }
 }
 
 void ReceiverPreferences::add_receiver(IPackageReceiver *r) {
@@ -48,16 +50,4 @@ IPackageReceiver* ReceiverPreferences::choose_receiver() {
     }
 
     return nullptr;
-}
-
-ReceiverPreferences::preferences_t& ReceiverPreferences::get_preferences() {
-    return preferences_;
-}
-
-ElementID Worker::get_id() const {
-    return id_;
-}
-
-ElementID Storehouse::get_id() const {
-    return id_;
 }
