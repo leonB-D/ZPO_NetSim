@@ -13,19 +13,27 @@ void PackageSender::send_package() {
 
 void ReceiverPreferences::add_receiver(IPackageReceiver *r) {
     if (this->preferences_.size() == 0) {
-        std::cout<<1<<std::endl;
         this->preferences_.insert({r, 1});
         return;
     }
 
-    double p = pg_();
-    double sum = 1 + p;
+    const double p = pg_();
+    const double p_sum = 1 + p;
 
     for (auto item : this->preferences_) {
-        item.second /= sum;
-        std::cout<<item.second<<std::endl;
+        this->preferences_[item.first] /= p_sum;
     }
 
-    std::cout<<p/sum<<std::endl;
-    this->preferences_.insert({r, p / sum});
+    this->preferences_.insert({r, p / p_sum});
+}
+
+void ReceiverPreferences::remove_receiver(IPackageReceiver *r) {
+    if (this->preferences_.size() == 0) return;
+
+    const double p_sum = 1 - this->preferences_[r];
+    this->preferences_.erase(r);
+
+    for (auto item : this->preferences_) {
+        this->preferences_[item.first] *= p_sum;
+    }
 }
