@@ -73,3 +73,75 @@ void generate_structure_report(const Factory& f,std::ostream& os) {
     }
 }
 
+void generate_simulation_turn_report(const Factory& f, std::ostream os, Time t) {
+	std::set<ElementID> workers;
+    std::set<ElementID> storehouses;
+	os << "=== [ Turn: " << ost::to_string(t) << " ]===\n\n";
+
+    os << "== WORKERS ==\n";
+    if (f.worker_cend() != f.worker_cbegin()) {
+    	os << "\n";
+    }
+    for (auto i = f.worker_cebgin(); i != f.worker_cend(); i++) {
+    	workers.insert(i->get_id());
+    }
+    for (auto i: workers) {
+    	auto it = f.find_worker_by_id(i);
+        os << "WORKER #" << std::to_string(i) << "\n";
+        if (it->get_processing_buffer().has_value()) {
+        	os << "  PBuffer: #" << it->get_processing_buffer()->get_id() << " (pt = "
+            << std::to_string(t - it->get_package_processing_start_time() + 1) << ")\n";
+        }
+        else{
+        	os << "  PBuffer: (empty)\n";
+        }
+        if (it->get_queue()->empty()) {
+        	os << "  Queue: (empty)\n";
+        }
+        else{
+        	os <<"  Queue:";
+            for (auto iter = it->get_queue().cbegin(); i
+           	!= it->get_queue().cend(); i++) {
+            	if (iter == it->get_queue().cbegin()) {
+              	os << " #" << iter->get_id();
+            	}
+            	else {
+            		os <<", #" << iter->get_id();
+            	}
+        	}
+        	os << "\n";
+        }
+        if (it->get_sendinge_buffer().has_value()) {
+        	os << "  SBuffer: #" << it->get_sending_buffer()->get_id() << "\n";
+        }
+        else{
+        	os << "  SBuffer: (empty)\n";
+        }
+    }
+
+    os << "\n\n== STOREHOUSES ==\n\n";
+    for (auto i = f.storehouse_cbegin(); i != f.storehouse_cend(); i++) {
+    	storehouses.insert(i->get_id());
+    }
+    for (auto i: storehouses) {
+    	auto it = f.find_storehouse_by_id(i);
+        os << "STOREHOUSE #" << std::to_string(i) << "\n";
+
+        if (it->get_queue().has_value()) {
+        	os << "  Stock:";
+            for (auto iter = it->get_queue().cbegin();
+            i != it->get_queue().cend(); i++) {
+            	if (iter == it->get_queue().cbegin()) {
+                	os << " #" << iter->get_id();
+            	}
+                else {
+                	os <<", #" << iter->get_id();
+                }
+            }
+            os <<"\n\n";
+        }
+        else{
+        	os << "  Stock: (empty)\n\n";
+        }
+    }
+}
