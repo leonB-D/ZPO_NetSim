@@ -2,6 +2,8 @@
 #include "nodes.hxx"
 #include "input_output.hxx"
 #include <iostream>
+#include <fstream>
+
 int main() {
     // std::cout<<"Hello World!"<<std::endl;
     //
@@ -31,6 +33,15 @@ int main() {
     for (auto it : data.parameters) {
         std::cout << it.first << " : " << it.second << std::endl;
     }
+
+    std::ifstream input_file("struct-input.txt");
+
+    Factory factory = load_factory_structure(input_file);
+
+    std::cout << factory.find_ramp_by_id(1)->get_delivery_interval() << std::endl;
+    std::cout << factory.find_worker_by_id(2)->receiver_preferences_.begin()->first->get_id() << std::endl;
+
+    input_file.close();
 
     return 0;
 }

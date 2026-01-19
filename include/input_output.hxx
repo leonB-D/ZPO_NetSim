@@ -12,7 +12,8 @@ struct ParsedLineData {
 };
 
 ParsedLineData parse_line(const std::string& line);
-void load_factory_structure(std::istream& is);
+void link_from_input(std::string& src, std::string& dest, Factory& factory);
+Factory load_factory_structure(std::istream& is);
 void save_factory_structure(Factory& factory, std::ostream& os);
 
 #endif //INPUT_OUTPUT_HXX
