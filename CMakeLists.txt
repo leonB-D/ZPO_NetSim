@@ -25,6 +25,7 @@ set(SOURCE_FILES_TEST
         tests/tests_package.cpp
         tests/tests_storage_types.cpp
         tests/tests_nodes.cpp
+        tests/tests_raport.cpp
 )
 
 add_executable(netsim_test ${SOURCE_FILES} ${SOURCE_FILES_TEST} main_gtest.cpp)
