@@ -13,11 +13,11 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
     for (auto ramp = factory.ramp_cbegin(); ramp != factory.ramp_cend(); ramp++) {
     	os << "LOADING RAMP #" << std::to_string(ramp->get_id()) << "\n  Delivery interval: "
     	<< std::to_string(ramp->get_delivery_interval()) << "\n  Recievers:\n";
-    	for (auto reciever = ramp->reciever_preferences_.cbegin(); reciever != ramp->reciever_preferences_.cend(); ++reciever) {
-			if (reciever->first->get_reciever_type() == RecieverType::WORKER) {
+    	for (auto reciever = ramp->receiver_preferences_.cbegin(); reciever != ramp->receiver_preferences_.cend(); ++reciever) {
+			if (reciever->first->get_receiver_type() == ReceiverType::WORKER) {
     			workers.insert(reciever->first->get_id());
    			}
-    		else if (reciever->first->get_reciever_type() == RecieverType::STOREHOUSE) {
+    		else if (reciever->first->get_receiver_type() == ReceiverType::STOREHOUSE) {
     			storehouses.insert(reciever->first->get_id());
    			}
 		}
@@ -36,7 +36,7 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
     os << "\n== WORKERS ==\n\n";
     std::string queue_type;
     for (auto worker = factory.worker_cbegin(); worker != factory.worker_cend(); worker++) {
-    	switch (worker->get_queue()->get_queue_type()) {
+    	switch (worker->get_queue()->get_QueueType()) {
         	case PackageQueueType::LIFO: {
             	queue_type = "LIFO";
                 break;
@@ -49,12 +49,12 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
     	}
         os << "WORKER #" << std::to_string(worker->get_id()) << "\n  Processing time: "
         << std::to_string(worker->get_processing_duration()) << "\n  Queue Type: " << queue_type << "\n  Recievers:\n";
-        for (auto reciever_preference = worker->reciever_preferences_.cbegin();
-		reciever_preference != worker->reciever_preferences_.cend(); reciever_preference++) {
-       		if (reciever_preference->first->get_reciever_type() == RecieverType::WORKER) {
+        for (auto reciever_preference = worker->receiver_preferences_.cbegin();
+		reciever_preference != worker->receiver_preferences_.cend(); reciever_preference++) {
+       		if (reciever_preference->first->get_receiver_type() == ReceiverType::WORKER) {
             	workers.insert(reciever_preference->first->get_id());
        		}
-            else if (reciever_preference->first->get_reciever_type() == RecieverType::STOREHOUSE) {
+            else if (reciever_preference->first->get_receiver_type() == ReceiverType::STOREHOUSE) {
             	storehouses.insert(reciever_preference->first->get_id());
             }
     	}
@@ -82,7 +82,7 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream os, Ti
     if (factory.worker_cend() != factory.worker_cbegin()) {
     	os << "\n";
     }
-    for (auto worker = factory.worker_cebgin(); worker != factory.worker_cend(); worker++) {
+    for (auto worker = factory.worker_cbegin(); worker != factory.worker_cend(); worker++) {
     	workers.insert(worker->get_id());
     }
     for (auto worker_id: workers) {
@@ -100,9 +100,9 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream os, Ti
         }
         else{
         	os <<"  Queue:";
-            for (auto worker_queue = worker->get_queue().cbegin(); worker_queue
-           	!= worker->get_queue().cend(); worker_queue++) {
-            	if (worker_queue == worker->get_queue().cbegin()) {
+            for (auto worker_queue = worker->get_queue()->cbegin(); worker_queue
+           	!= worker->get_queue()->cend(); worker_queue++) {
+            	if (worker_queue == worker->get_queue()->cbegin()) {
               	os << " #" << worker_queue->get_id();
             	}
             	else {
@@ -127,11 +127,11 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream os, Ti
     	auto storehouse = factory.find_storehouse_by_id(storehouse_id);
         os << "STOREHOUSE #" << std::to_string(storehouse_id) << "\n";
 
-        if (storehouse->get_queue().has_value()) {
+        if (!storehouse->get_queue()->empty()) {
         	os << "  Stock:";
-            for (auto storehouse_queue = storehouse->get_queue().cbegin();
-            storehouse_queue != storehouse->get_queue().cend(); storehouse_queue++) {
-            	if (storehouse_queue == storehouse->get_queue().cbegin()) {
+            for (auto storehouse_queue = storehouse->get_queue()->cbegin();
+            storehouse_queue != storehouse->get_queue()->cend(); storehouse_queue++) {
+            	if (storehouse_queue == storehouse->get_queue()->cbegin()) {
                 	os << " #" << storehouse_queue->get_id();
             	}
                 else {
