@@ -1,19 +1,36 @@
 #include <input_output.hxx>
 
-void load_factory_structure(std::istream& is) {}
-
-void save_factory_structure(Factory& factory, std::ostream& os) {}
-
-std::vector<std::string> parse_line(std::string line) {
+ParsedLineData parse_line(const std::string& line) {
     std::vector<std::string> tokens;
-    std::string token;
+    std::string type_token;
 
     std::istringstream token_stream(line);
-    char delimiter = ' ';
 
-    while (std::getline(token_stream, token, delimiter)) {
-        tokens.push_back(token);
+    std::getline(token_stream, type_token, ' ');
+
+    ParsedLineData data;
+
+    if (type_token == "LOADING_RAMP") data.type = ElementType::RAMP;
+    else if (type_token == "WORKER") data.type = ElementType::WORKER;
+    else if (type_token == "STOREHOUSE") data.type = ElementType::STOREHOUSE;
+    else if (type_token == "LINK") data.type = ElementType::LINK;
+    else throw std::invalid_argument("Wrong type in input file");
+
+    std::string key;
+    std::string value;
+
+    while (std::getline(token_stream, key, '=') && std::getline(token_stream, value, ' ')) {
+        data.parameters.insert(std::pair<std::string, std::string>(key, value));
     }
 
-    return tokens;
+    return data;
 }
+
+void load_factory_structure(std::istream& is) {
+    std::string line;
+    while (std::getline(is, line)) {
+        if (line.empty() || line[0] == ';') continue;
+    }
+}
+
+void save_factory_structure(Factory& factory, std::ostream& os) {}

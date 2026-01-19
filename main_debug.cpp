@@ -24,9 +24,12 @@ int main() {
     // }
     // std::cout<<"1: "<<sums[0]<<"\n2: "<<sums[1]<<"\n3: "<<sums[2];
 
-    auto tokens = parse_line("Ala ma kota.");
-    for (const auto& token : tokens) {
-        std::cout << token << std::endl;
+    std::string line = "WORKER id=<worker-id> processing-time=<processing-time> queue-type=<queue-type>";
+
+    ParsedLineData data = parse_line(line);
+
+    for (auto it : data.parameters) {
+        std::cout << it.first << " : " << it.second << std::endl;
     }
 
     return 0;
