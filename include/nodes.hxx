@@ -89,6 +89,7 @@ public:
     Time get_package_processing_start_time() {return start_time_;}
     std::optional<Package>& get_processing_buffer() {return p_buffer;}
     ReceiverType get_receiver_type() const override { return ReceiverType::WORKER; }
+    IPackageQueue* get_queue() const { return queue_.get(); }
 
     void receive_package(Package&& p) override {queue_->push(std::move(p));}
     ElementID get_id() const override {return id_;}
