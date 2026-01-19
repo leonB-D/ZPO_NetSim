@@ -13,6 +13,7 @@ set(SOURCE_FILES
         src/package.cpp
         src/storage_types.cpp
         src/factory.cpp
+        src/input_output.cpp
         src/raport.cpp
 )
 

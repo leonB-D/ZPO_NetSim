@@ -26,4 +26,5 @@ int main()
         generate_simulation_turn_report(factory, std::cout, t);
     }
 
+    return 0;
 }
