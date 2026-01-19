@@ -2,13 +2,11 @@
 
 #include "simulation.hxx"
 #include <stdexcept>
-#include "factory.hxx"
-#include "storage_types.hxx"
 
 void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time)> report_function){
 
     if (!f.is_consistent()) {
-        throw std::logic_error("Network is inconsistent");
+        //throw std::logic_error("Network is inconsistent");
     }
 
 

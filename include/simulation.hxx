@@ -3,12 +3,11 @@
 #define SIMULATION_HXX
 
 
-#include "storage_types.hxx"
+#include "raport.hpp"
+#include "input_output.hxx"
 #include <functional>
 #include <set>
 #include "types.hxx"
-
-class Factory;
 
 void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time)> report_function);
 

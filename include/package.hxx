@@ -5,7 +5,7 @@ public:
 
     Package();
     explicit Package(ElementID id) : id_(id) { assigned_ids.insert(id); }
-    Package(Package&& other_package) noexcept : id_(other_package.id_) { }
+    Package(Package&& other_package) noexcept : id_(other_package.id_) { other_package.id_ = 0; }
     Package& operator=(Package&& package) noexcept;
     ElementID get_id() const { return id_; }
     ~Package();
