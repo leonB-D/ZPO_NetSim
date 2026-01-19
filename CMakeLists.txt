@@ -4,7 +4,6 @@ project(ZPO_NetSim)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(
-
         include
 )
 
@@ -34,5 +33,5 @@ target_include_directories(netsim_test PUBLIC
         ../googletest-1.17.0/googlemock/include
 )
 target_link_libraries(netsim_test
-        gtest
+        GTest::gtest
 )
