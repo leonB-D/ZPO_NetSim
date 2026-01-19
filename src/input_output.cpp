@@ -28,8 +28,12 @@ ParsedLineData parse_line(const std::string& line) {
 
 void load_factory_structure(std::istream& is) {
     std::string line;
+    std::vector<ParsedLineData> data;
+
     while (std::getline(is, line)) {
         if (line.empty() || line[0] == ';') continue;
+
+        data.push_back(parse_line(line));
     }
 }
 
