@@ -87,6 +87,7 @@ public:
     void do_work(Time t);
     TimeOffset get_processing_duration() const {return time_offset_;}
     Time get_package_processing_start_time() const {return start_time_;}
+    const std::optional<Package>& get_processing_buffer() const {return p_buffer;}
     ReceiverType get_receiver_type() const override { return ReceiverType::WORKER; }
 
     void receive_package(Package&& p) override {queue_->push(std::move(p));}
@@ -96,13 +97,12 @@ public:
     IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
     IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
     IPackageQueue* get_queue() const { return queue_.get(); }
-    const std::optional<Package>& get_processing_buffer() const { return buffer; }
 private:
     ElementID id_;
     TimeOffset time_offset_;
     Time start_time_ = 0;
     std::unique_ptr<IPackageQueue> queue_;
-    std::optional<Package> buffer = std::nullopt;
+    std::optional<Package> p_buffer = std::nullopt;
 };
 
 class Storehouse: public IPackageReceiver {

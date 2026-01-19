@@ -53,21 +53,19 @@ IPackageReceiver* ReceiverPreferences::choose_receiver() {
 }
 
 void Ramp::deliver_goods(Time t) {
-    if (!buffer.has_value()) start_time_ = t;
-
-    if (buffer.has_value() && t >= start_time_ + time_offset_) {
-        this->send_package();
+    if (start_time_ + time_offset_ <= t) {
+        push_package(Package());
+        start_time_ = t;
     }
 }
 
 void Worker::do_work(Time t) {
-    if (!buffer.has_value()) {
-        start_time_ = t;
-        if (queue_) push_package(queue_->pop());
-    }
 
-    if (buffer.has_value() && t >= start_time_ + time_offset_) {
-        this->send_package();
-        if (queue_) push_package(queue_->pop());
+    if (start_time_ + time_offset_ <= t) {
+        if (p_buffer.has_value()) push_package(std::move(p_buffer.value()));
+
+        if (!queue_->empty()) p_buffer = std::move(queue_->pop());
+        else p_buffer = std::nullopt;
+        start_time_ = t;
     }
 }
