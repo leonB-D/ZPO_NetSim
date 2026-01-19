@@ -19,7 +19,6 @@ TEST(RaportTest, StructureReport_R1W1S1) {
     Worker& w = *(factory.find_worker_by_id(1));
     w.receiver_preferences_.add_receiver(&(*factory.find_storehouse_by_id(1)));
 
-    // -----------------------------------------------------------------------
 
     std::vector<std::string> expected_report_lines{
         "",
@@ -48,7 +47,7 @@ TEST(RaportTest, StructureReport_R1W1S1) {
 }
 
 TEST(ReportsTest, TurnReportPackageInQueue) {
-    
+
     Factory factory;
 
     factory.add_ramp(Ramp(1, 10));
@@ -64,8 +63,6 @@ TEST(ReportsTest, TurnReportPackageInQueue) {
     Time t = 1;
     r.deliver_goods(t);
     r.send_package();
-
-    // -----------------------------------------------------------------------
 
     std::vector<std::string> expected_report_lines{
         "=== [ Turn: " + std::to_string(t) + " ] ===",

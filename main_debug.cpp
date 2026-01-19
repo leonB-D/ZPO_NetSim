@@ -1,27 +1,25 @@
 //test
-#include "nodes.hxx"
-#include <iostream>
+#include "factory.hxx"
+#include "raport.hpp"
+
+
 int main() {
     std::cout<<"Hello World!"<<std::endl;
 
-    ReceiverPreferences rp;
-    Worker ip1(1, 5, std::make_unique<PackageQueue>(PackageQueueType::LIFO));
-    Worker ip2(2, 10, std::make_unique<PackageQueue>(PackageQueueType::FIFO));
-    Storehouse ip3(3, std::make_unique<PackageQueue>(PackageQueueType::LIFO));
-    rp.add_receiver(&ip1);
-    rp.add_receiver(&ip2);
-    rp.add_receiver(&ip3);
+    Factory factory;
 
-    for (auto item : rp.get_preferences()) {
-        std::cout<<item.first->get_id()<<" "<<item.second<<std::endl;
-    }
+    factory.add_ramp(Ramp(1, 10));
+    factory.add_worker(Worker(1, 2, std::make_unique<PackageQueue>(PackageQueueType::FIFO)));
+    factory.add_storehouse(Storehouse(1,std::make_unique<PackageQueue>(PackageQueueType::FIFO)));
 
-    std::vector<int> sums = {0, 0, 0};
-    for (int i=0; i<100; i++) {
-        int id = rp.choose_receiver()->get_id();
-        sums[id-1] += 1;
-    }
-    std::cout<<"1: "<<sums[0]<<"\n2: "<<sums[1]<<"\n3: "<<sums[2];
+    Ramp& r = *(factory.find_ramp_by_id(1));
+    r.receiver_preferences_.add_receiver(&(*factory.find_worker_by_id(1)));
 
-    return 0;
+    Worker& w = *(factory.find_worker_by_id(1));
+    w.receiver_preferences_.add_receiver(&(*factory.find_storehouse_by_id(1)));
+
+    Time t = 1;
+    r.deliver_goods(t);
+    r.send_package();
+    generate_structure_report(factory,std::cout);
 }

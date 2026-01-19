@@ -13,6 +13,7 @@ set(SOURCE_FILES
         src/package.cpp
         src/storage_types.cpp
         src/factory.cpp
+        src/raport.cpp
 )
 
 add_executable(netsim ${SOURCE_FILES} main_debug.cpp)
