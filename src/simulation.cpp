@@ -5,8 +5,7 @@
 #include "factory.hxx"
 #include "storage_types.hxx"
 
-void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time)> report_function)
-{
+void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time)> report_function){
 
     if (!f.is_consistent()) {
         throw std::logic_error("Network is inconsistent");
@@ -26,14 +25,14 @@ void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time
 }
 
 
-bool IntervalReportNotifier::should_generate_report(Time t) {
+bool IntervalReportNotifier::should_generate_report(Time t) const {
 
     if (to_ == 0) return false;
     return (t - 1) % to_ == 0;
 }
 
 
-bool SpecificTurnsReportNotifier::should_generate_report(Time t)
+bool SpecificTurnsReportNotifier::should_generate_report(Time t) const
 {
 
     return turns_.find(t) != turns_.end();
