@@ -10,6 +10,9 @@
 using ElementID = int;
 using Time = int;
 using TimeOffset = int;
+enum class RecieverType {
+    WORKER, STOREHOUSE
+};
 
 
 class IPackageReceiver {
