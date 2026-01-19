@@ -164,3 +164,5 @@ enum class ElementType
 };
 
 #endif //ZPO_NETSIM_FACTORY_HXX
+
+// symulacja branch
