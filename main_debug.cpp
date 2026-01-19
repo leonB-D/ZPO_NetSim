@@ -1,22 +1,14 @@
 //test
-#include "factory.hxx"
+#include "input_output.hxx"
 #include "raport.hpp"
+#include <fstream>
 
 
 int main()
 {
-    Factory factory;
+    std::ifstream input_file("struct-input.txt");
 
-    factory.add_ramp(Ramp(1, 1));
-    factory.add_worker(Worker(1, 2, std::make_unique<PackageQueue>(PackageQueueType::FIFO)));
-    factory.add_storehouse(Storehouse(1,std::make_unique<PackageQueue>(PackageQueueType::FIFO)));
-
-    Ramp& r = *(factory.find_ramp_by_id(1));
-    r.receiver_preferences_.add_receiver(&(*factory.find_worker_by_id(1)));
-
-    Worker& w = *(factory.find_worker_by_id(1));
-    w.receiver_preferences_.add_receiver(&(*factory.find_storehouse_by_id(1)));
-
+    Factory factory = load_factory_structure(input_file);
 
     for (Time t = 1; t <= 10; t++)
     {
@@ -25,6 +17,8 @@ int main()
         factory.do_package_passing();
         generate_simulation_turn_report(factory, std::cout, t);
     }
+
+    input_file.close();
 
     return 0;
 }

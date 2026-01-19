@@ -80,8 +80,6 @@ Factory load_factory_structure(std::istream& is) {
     return factory;
 }
 
-void save_factory_structure(Factory& factory, std::ostream& os) {}
-
 void link_from_input(std::string& src, std::string& dest, Factory& factory) {
     int pos = src.find('-');
     std::string src_type = src.substr(0, pos);
