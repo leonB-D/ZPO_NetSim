@@ -6,6 +6,47 @@
 #include "raport.hpp"
 
 #include <functional>
+#include <gmock/gmock-matchers.h>
+using ::testing::ContainerEq;
+
+// Funkcje potrzebne do porównania linii wygenerowanych raportów z liniami, jakie powinny się w nim znaleźć
+void perform_report_check(std::function<void(std::ostringstream&)>& reporting_function,
+                          std::vector<std::string>& expected_report_lines) {
+    std::ostringstream report_oss;
+    reporting_function(report_oss);
+
+    std::vector<std::string> output_lines;
+    std::istringstream iss;
+    iss.str(report_oss.str());
+    std::string line;
+    while (std::getline(iss, line, '\n')) {
+        output_lines.push_back(line);
+    }
+
+    std::ostringstream expected_report_oss;
+    for (auto& line : expected_report_lines) {
+        expected_report_oss << line << "\n";
+    }
+    ASSERT_EQ(output_lines.size(), output_lines.size());
+    EXPECT_THAT(output_lines, ContainerEq(expected_report_lines));
+
+
+}
+
+void perform_turn_report_check(const Factory& factory, Time t, std::vector<std::string>& expected_report_lines) {
+    std::function<void(std::ostringstream&)> reporting_function = [&factory, t](
+            std::ostringstream& oss) { generate_simulation_turn_report(factory, oss, t); };
+    perform_report_check(reporting_function, expected_report_lines);
+}
+
+void perform_structure_report_check(const Factory& factory, std::vector<std::string>& expected_report_lines) {
+    std::function<void(std::ostringstream&)> reporting_function = [&factory](
+            std::ostringstream& oss) { generate_structure_report(factory, oss); };
+    perform_report_check(reporting_function, expected_report_lines);
+}
+
+//TESTY
+
 TEST(RaportTest, StructureReport_R1W1S1) {
     Factory factory;
 
@@ -44,6 +85,7 @@ TEST(RaportTest, StructureReport_R1W1S1) {
         "STOREHOUSE #1",
         "",
 };
+    perform_structure_report_check(factory, expected_report_lines);
 }
 
 TEST(ReportsTest, TurnReportPackageInQueue) {
@@ -81,4 +123,5 @@ TEST(ReportsTest, TurnReportPackageInQueue) {
         "  Stock: (empty)",
         "",
 };
+    perform_turn_report_check(factory, t, expected_report_lines);
 }

@@ -96,13 +96,13 @@ public:
     IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
     IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
     IPackageQueue* get_queue() const { return queue_.get(); }
-    const std::optional<Package>& get_processing_buffer() const { return buffer_; }
+    const std::optional<Package>& get_processing_buffer() const { return buffer; }
 private:
     ElementID id_;
     TimeOffset time_offset_;
     Time start_time_ = 0;
     std::unique_ptr<IPackageQueue> queue_;
-    std::optional<Package> buffer_ = std::nullopt;
+    std::optional<Package> buffer = std::nullopt;
 };
 
 class Storehouse: public IPackageReceiver {

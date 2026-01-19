@@ -12,7 +12,7 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
 	os << "\n== LOADING RAMPS ==\n\n";
     for (auto ramp = factory.ramp_cbegin(); ramp != factory.ramp_cend(); ramp++) {
     	os << "LOADING RAMP #" << std::to_string(ramp->get_id()) << "\n  Delivery interval: "
-    	<< std::to_string(ramp->get_delivery_interval()) << "\n  Recievers:\n";
+    	<< std::to_string(ramp->get_delivery_interval()) << "\n  Receivers:\n";
     	for (auto reciever = ramp->receiver_preferences_.cbegin(); reciever != ramp->receiver_preferences_.cend(); ++reciever) {
 			if (reciever->first->get_receiver_type() == ReceiverType::WORKER) {
     			workers.insert(reciever->first->get_id());
@@ -48,7 +48,7 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
             default: break;
     	}
         os << "WORKER #" << std::to_string(worker->get_id()) << "\n  Processing time: "
-        << std::to_string(worker->get_processing_duration()) << "\n  Queue Type: " << queue_type << "\n  Recievers:\n";
+        << std::to_string(worker->get_processing_duration()) << "\n  Queue type: " << queue_type << "\n  Receivers:\n";
         for (auto reciever_preference = worker->receiver_preferences_.cbegin();
 		reciever_preference != worker->receiver_preferences_.cend(); reciever_preference++) {
        		if (reciever_preference->first->get_receiver_type() == ReceiverType::WORKER) {
@@ -73,10 +73,10 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
     }
 }
 
-void generate_simulation_turn_report(const Factory& factory, std::ostream os, Time t) {
+void generate_simulation_turn_report(const Factory& factory, std::ostream& os, Time t) {
 	std::set<ElementID> workers;
     std::set<ElementID> storehouses;
-	os << "=== [ Turn: " << std::to_string(t) << " ]===\n\n";
+	os << "=== [ Turn: " << std::to_string(t) << " ] ===\n\n";
 
     os << "== WORKERS ==\n";
     if (factory.worker_cend() != factory.worker_cbegin()) {
@@ -127,21 +127,23 @@ void generate_simulation_turn_report(const Factory& factory, std::ostream os, Ti
     	auto storehouse = factory.find_storehouse_by_id(storehouse_id);
         os << "STOREHOUSE #" << std::to_string(storehouse_id) << "\n";
 
-        if (!storehouse->get_queue()->empty()) {
-        	os << "  Stock:";
-            for (auto storehouse_queue = storehouse->get_queue()->cbegin();
-            storehouse_queue != storehouse->get_queue()->cend(); storehouse_queue++) {
-            	if (storehouse_queue == storehouse->get_queue()->cbegin()) {
-                	os << " #" << storehouse_queue->get_id();
-            	}
-                else {
-                	os <<", #" << storehouse_queue->get_id();
-                }
-            }
-            os <<"\n\n";
+        if (storehouse->get_queue()->empty())
+        {
+	        os << "  Stock: (empty)\n\n";
         }
-        else{
-        	os << "  Stock: (empty)\n\n";
+        else
+        {
+	        os << "  Stock:";
+        	for (auto storehouse_queue = storehouse->get_queue()->cbegin();
+			storehouse_queue != storehouse->get_queue()->cend(); storehouse_queue++) {
+        		if (storehouse_queue == storehouse->get_queue()->cbegin()) {
+        			os << " #" << storehouse_queue->get_id();
+        		}
+        		else {
+        			os <<", #" << storehouse_queue->get_id();
+        		}
+			}
+        	os <<"\n\n";
         }
     }
 }
