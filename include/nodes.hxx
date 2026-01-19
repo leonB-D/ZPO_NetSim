@@ -56,12 +56,12 @@ public:
     virtual ~PackageSender() = default;
 
     void send_package();
+    void push_package(Package&& p);
     std::optional<Package>& get_sending_buffer() {return buffer;}
 
     ReceiverPreferences receiver_preferences_;
 protected:
     std::optional<Package> buffer = std::nullopt;
-    void push_package(Package&& p);
 };
 
 class Ramp : public PackageSender {
@@ -87,6 +87,7 @@ public:
     void do_work(Time t);
     TimeOffset get_processing_duration() {return time_offset_;}
     Time get_package_processing_start_time() {return start_time_;}
+    std::optional<Package>& get_processing_buffer() {return p_buffer;}
     ReceiverType get_receiver_type() const override { return ReceiverType::WORKER; }
 
     void receive_package(Package&& p) override {queue_->push(std::move(p));}
@@ -101,6 +102,7 @@ private:
     TimeOffset time_offset_;
     Time start_time_ = 0;
     std::unique_ptr<IPackageQueue> queue_;
+    std::optional<Package> p_buffer = std::nullopt;
 };
 
 class Storehouse: public IPackageReceiver {
