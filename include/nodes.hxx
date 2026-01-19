@@ -56,12 +56,12 @@ public:
     virtual ~PackageSender() = default;
 
     void send_package();
-    void push_package(Package&& p);
-    std::optional<Package>& get_sending_buffer() {return buffer;}
+    const std::optional<Package>& get_sending_buffer() const {return buffer;}
 
     ReceiverPreferences receiver_preferences_;
 protected:
     std::optional<Package> buffer = std::nullopt;
+    void push_package(Package&& p);
 };
 
 class Ramp : public PackageSender {
@@ -70,7 +70,7 @@ public:
         : PackageSender(), id_(id), time_offset_(di) {};
 
     void deliver_goods(Time t);
-    TimeOffset get_delivery_interval() {return time_offset_;}
+    TimeOffset get_delivery_interval() const {return time_offset_;}
     ElementID get_id() const {return id_;}
 
 private:
@@ -85,11 +85,10 @@ public:
         : PackageSender(), id_(id), time_offset_(pd), queue_(std::move(q)) {};
 
     void do_work(Time t);
-    TimeOffset get_processing_duration() {return time_offset_;}
-    Time get_package_processing_start_time() {return start_time_;}
-    std::optional<Package>& get_processing_buffer() {return p_buffer;}
+    TimeOffset get_processing_duration() const {return time_offset_;}
+    Time get_package_processing_start_time() const {return start_time_;}
+    const std::optional<Package>& get_processing_buffer() const {return p_buffer;}
     ReceiverType get_receiver_type() const override { return ReceiverType::WORKER; }
-    IPackageQueue* get_queue() const { return queue_.get(); }
 
     void receive_package(Package&& p) override {queue_->push(std::move(p));}
     ElementID get_id() const override {return id_;}
@@ -97,7 +96,7 @@ public:
     IPackageStockpile::const_iterator end() const override {return queue_->end();}
     IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
     IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
-
+    IPackageQueue* get_queue() const { return queue_.get(); }
 private:
     ElementID id_;
     TimeOffset time_offset_;
@@ -119,6 +118,7 @@ public:
     IPackageStockpile::const_iterator end() const override {return queue_->end();}
     IPackageStockpile::const_iterator cbegin() const override {return queue_->cbegin();}
     IPackageStockpile::const_iterator cend() const override {return queue_->cend();}
+    IPackageQueue* get_queue() const { return queue_.get(); }
 
 private:
     ElementID id_;

@@ -1,27 +1,29 @@
 //test
-#include "nodes.hxx"
-#include <iostream>
-int main() {
-    std::cout<<"Hello World!"<<std::endl;
+#include "factory.hxx"
+#include "raport.hpp"
 
-    ReceiverPreferences rp;
-    Worker ip1(1, 5, std::make_unique<PackageQueue>(PackageQueueType::LIFO));
-    Worker ip2(2, 10, std::make_unique<PackageQueue>(PackageQueueType::FIFO));
-    Storehouse ip3(3, std::make_unique<PackageQueue>(PackageQueueType::LIFO));
-    rp.add_receiver(&ip1);
-    rp.add_receiver(&ip2);
-    rp.add_receiver(&ip3);
 
-    for (auto item : rp.get_preferences()) {
-        std::cout<<item.first->get_id()<<" "<<item.second<<std::endl;
+int main()
+{
+    Factory factory;
+
+    factory.add_ramp(Ramp(1, 1));
+    factory.add_worker(Worker(1, 2, std::make_unique<PackageQueue>(PackageQueueType::FIFO)));
+    factory.add_storehouse(Storehouse(1,std::make_unique<PackageQueue>(PackageQueueType::FIFO)));
+
+    Ramp& r = *(factory.find_ramp_by_id(1));
+    r.receiver_preferences_.add_receiver(&(*factory.find_worker_by_id(1)));
+
+    Worker& w = *(factory.find_worker_by_id(1));
+    w.receiver_preferences_.add_receiver(&(*factory.find_storehouse_by_id(1)));
+
+
+    for (Time t = 1; t <= 10; t++)
+    {
+        factory.do_work(t);
+        factory.do_deliveries(t);
+        factory.do_package_passing();
+        generate_simulation_turn_report(factory, std::cout, t);
     }
 
-    std::vector<int> sums = {0, 0, 0};
-    for (int i=0; i<100; i++) {
-        int id = rp.choose_receiver()->get_id();
-        sums[id-1] += 1;
-    }
-    std::cout<<"1: "<<sums[0]<<"\n2: "<<sums[1]<<"\n3: "<<sums[2];
-
-    return 0;
 }
