@@ -11,16 +11,18 @@ int main()
 
     input_file.close();
 
+    generate_structure_report(factory, std::cout);
+
     // Testowanie z użyciem "wydmuszki" funkcji raportującej.
-    simulate(factory, 3, [](Factory&, TimeOffset) {});
+    simulate(factory, 10, std::cout, generate_simulation_turn_report);
 
     // Testowanie z użyciem konkretnego obiektu klasy raportującej.
-    SpecificTurnsReportNotifier spec_notifier(std::set<Time>{1});
-    simulate(factory, 3, [&spec_notifier](Factory& f, TimeOffset t_offset) {
-        if (spec_notifier.should_generate_report(t_offset)) {
-            generate_structure_report(f, std::cout);
-        }
-    });
+//    SpecificTurnsReportNotifier spec_notifier(std::set<Time>{1});
+//    simulate(factory, 3, [&spec_notifier](Factory& f, TimeOffset t_offset) {
+//        if (spec_notifier.should_generate_report(t_offset)) {
+//            generate_structure_report(f, std::cout);
+//        }
+//    });
 
     return 0;
 }

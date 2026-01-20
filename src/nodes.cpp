@@ -60,19 +60,10 @@ void Ramp::deliver_goods(Time t) {
 }
 
 void Worker::do_work(Time t) {
-
     if (start_time_ + time_offset_ <= t) {
         if (p_buffer.has_value()) push_package(std::move(p_buffer.value()));
 
         if (!queue_->empty()) p_buffer = std::move(queue_->pop());
-        else p_buffer = std::nullopt;
-        start_time_ = t;
-    }
-
-    if (start_time_ + time_offset_ <= t) {
-        if (p_buffer.has_value()) push_package(std::move(p_buffer.value()));
-
-        if (queue_) p_buffer = queue_->pop();
         else p_buffer = std::nullopt;
         start_time_ = t;
     }

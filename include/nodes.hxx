@@ -76,7 +76,7 @@ public:
 private:
     ElementID id_;
     TimeOffset time_offset_;
-    Time start_time_ = 0;
+    Time start_time_ = -99;
 };
 
 class Worker : public PackageSender, public IPackageReceiver {
@@ -100,7 +100,7 @@ public:
 private:
     ElementID id_;
     TimeOffset time_offset_;
-    Time start_time_ = 0;
+    Time start_time_ = -99;
     std::unique_ptr<IPackageQueue> queue_;
     std::optional<Package> p_buffer = std::nullopt;
 };

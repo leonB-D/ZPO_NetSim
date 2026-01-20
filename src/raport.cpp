@@ -28,9 +28,9 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
       		os << "    worker #" << std::to_string(worker) << "\n";
     	}
     	os << "\n";
+        workers.clear();
+        storehouses.clear();
 	}
-    workers.clear();
-    storehouses.clear();
 
     // PRACOWNICY
     os << "\n== WORKERS ==\n\n";
@@ -65,6 +65,8 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
         	os << "    worker #" << std::to_string(worker) << "\n";
         }
         os << "\n";
+        workers.clear();
+        storehouses.clear();
     }
     // MAGAZYNY
     os << "\n== STOREHOUSES ==\n\n";

@@ -13,7 +13,7 @@ TEST(WorkerTest, HasBuffer) {
     ++t;
     w.receive_package(Package(2));
     w.do_work(t);
-    auto& buffer = w.get_sending_buffer();
+    auto& buffer = w.get_processing_buffer();
 
     ASSERT_TRUE(buffer.has_value());
     EXPECT_EQ(buffer.value().get_id(), 1);
@@ -32,9 +32,10 @@ TEST(WorkerTest, WorksCorrectly) {
     w.do_work(t);
     ++t;
     w.do_work(t);
+    w.send_package();
 
     EXPECT_EQ(s.cbegin()->get_id(), 1);
-    EXPECT_EQ(w.get_sending_buffer().value().get_id(), 2);
+    EXPECT_EQ(w.get_processing_buffer().value().get_id(), 2);
 }
 
 TEST(ReceiverPreferencesTest, CorrectlyScaling) {

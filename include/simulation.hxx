@@ -9,7 +9,7 @@
 #include <set>
 #include "types.hxx"
 
-void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time)> report_function);
+void simulate(Factory& f, TimeOffset duration, std::ostream& os, std::function<void(Factory&, std::ostream&, Time)> report_function);
 
 class IntervalReportNotifier {
 public:

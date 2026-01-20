@@ -3,7 +3,7 @@
 #include "simulation.hxx"
 #include <stdexcept>
 
-void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time)> report_function){
+void simulate(Factory& f, TimeOffset duration, std::ostream& os,  std::function<void(Factory&, std::ostream&, Time)> report_function){
 
     if (!f.is_consistent()) {
         //throw std::logic_error("Network is inconsistent");
@@ -18,7 +18,7 @@ void simulate(Factory& f, TimeOffset duration, std::function<void(Factory&, Time
         f.do_work(t);
 
 
-        report_function(f, t);
+        report_function(f, os, t);
     }
 }
 

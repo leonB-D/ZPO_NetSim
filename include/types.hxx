@@ -4,10 +4,8 @@
 #include <functional>
 
 using ElementID = unsigned;
-using TimeOffset = unsigned;
-using Time = unsigned;
-
-using Time = unsigned;
+using TimeOffset = int;
+using Time = int;
 
 using TimeOffset = Time;
 
