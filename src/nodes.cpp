@@ -19,7 +19,8 @@ void ReceiverPreferences::add_receiver(IPackageReceiver *r) {
         return;
     }
 
-    const double p = pg_();
+    //const double p = pg_();
+    const double p = 1;
     const double p_sum = 1 + p;
 
     for (auto item : preferences_) {
@@ -65,6 +66,6 @@ void Worker::do_work(Time t) {
 
         if (!queue_->empty()) p_buffer = std::move(queue_->pop());
         else p_buffer = std::nullopt;
-        start_time_ = t-1;
+        start_time_ = t - 1;
     }
 }
