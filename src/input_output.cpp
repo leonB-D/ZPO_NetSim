@@ -103,3 +103,62 @@ void link_from_input(std::string& src, std::string& dest, Factory& factory) {
 
     else throw std::invalid_argument("Wrong source type in input file");
 }
+
+void save_factory_structure(const Factory& factory,std::ostream& os) {
+    // RAMPY
+	os << "; == LOADING RAMPS ==\n\n";
+    for (auto ramp = factory.ramp_cbegin(); ramp != factory.ramp_cend(); ramp++) {
+    	os << "LOADING_RAMP id=" << std::to_string(ramp->get_id()) << " delivery-interval="
+    	<< std::to_string(ramp->get_delivery_interval()) << std::endl;
+	}
+
+    // PRACOWNICY
+    os << "\n; == WORKERS ==\n\n";
+    std::string queue_type;
+    for (auto worker = factory.worker_cbegin(); worker != factory.worker_cend(); worker++) {
+    	switch (worker->get_queue()->get_queue_type()) {
+        	case PackageQueueType::LIFO: {
+            	queue_type = "LIFO";
+                break;
+    		}
+            case PackageQueueType::FIFO: {
+              queue_type = "FIFO";
+              break;
+            }
+            default: break;
+    	}
+        os << "WORKER id=" << std::to_string(worker->get_id()) << " processing-time="
+        << std::to_string(worker->get_processing_duration()) << " queue-type=" << queue_type << std::endl;
+    }
+    // MAGAZYNY
+    os << "\n;== STOREHOUSES ==\n\n";
+    for (auto storehouse = factory.storehouse_cbegin(); storehouse != factory.storehouse_cend(); storehouse++) {
+    	os << "STOREHOUSE id=" << std::to_string(storehouse->get_id()) << std::endl;
+    }
+    // POŁĄCZENIA
+    os << "\n;== LINKS ==\n\n";
+    for (auto ramp = factory.ramp_cbegin(); ramp != factory.ramp_cend(); ramp++) {
+        for (auto reciever = ramp->receiver_preferences_.cbegin(); reciever != ramp->receiver_preferences_.cend(); ++reciever) {
+            std::string dest_type;
+            if (reciever->first->get_receiver_type() == ReceiverType::WORKER) {
+                dest_type = "worker-";
+            }
+            else if (reciever->first->get_receiver_type() == ReceiverType::STOREHOUSE) {
+                dest_type = "storehouse-";
+            }
+            os << "LINK src=ramp-" << std::to_string(ramp->get_id()) << " dest=" << dest_type << std::to_string(reciever->first->get_id()) << std::endl;
+        }
+    }
+    for (auto worker = factory.worker_cbegin(); worker != factory.worker_cend(); worker++) {
+        for (auto reciever = worker->receiver_preferences_.cbegin(); reciever != worker->receiver_preferences_.cend(); ++reciever) {
+            std::string dest_type;
+            if (reciever->first->get_receiver_type() == ReceiverType::WORKER) {
+                dest_type = "worker-";
+            }
+            else if (reciever->first->get_receiver_type() == ReceiverType::STOREHOUSE) {
+                dest_type = "storehouse-";
+            }
+            os << "LINK src=worker-" << std::to_string(worker->get_id()) << " dest=" << dest_type << std::to_string(reciever->first->get_id()) << std::endl;
+        }
+    }
+}

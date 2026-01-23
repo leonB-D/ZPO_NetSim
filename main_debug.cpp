@@ -1,5 +1,6 @@
 //test
 #include "simulation.hxx"
+#include "input_output.hxx"
 #include <fstream>
 
 
@@ -11,7 +12,8 @@ int main()
 
     input_file.close();
 
-    generate_structure_report(factory, std::cout);
+    save_factory_structure(factory, std::cout);
+    //generate_structure_report(factory, std::cout);
 
     // Testowanie z użyciem "wydmuszki" funkcji raportującej.
     simulate(factory, 10, std::cout, generate_simulation_turn_report);

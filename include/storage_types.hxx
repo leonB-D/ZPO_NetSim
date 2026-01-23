@@ -29,7 +29,7 @@ class IPackageQueue: public IPackageStockpile {
 public:
     ~IPackageQueue() override = default;
     virtual Package pop() = 0;
-    virtual PackageQueueType get_QueueType() const = 0;
+    virtual PackageQueueType get_queue_type() const = 0;
 };
 
 class PackageQueue: public IPackageQueue {
@@ -64,7 +64,7 @@ public:
         return this->package_list_.cend();
     }
     Package pop() override;
-    PackageQueueType get_QueueType() const override
+    PackageQueueType get_queue_type() const override
     {
         return this->package_QueueType_;
     };

@@ -36,7 +36,7 @@ void generate_structure_report(const Factory& factory,std::ostream& os) {
     os << "\n== WORKERS ==\n\n";
     std::string queue_type;
     for (auto worker = factory.worker_cbegin(); worker != factory.worker_cend(); worker++) {
-    	switch (worker->get_queue()->get_QueueType()) {
+    	switch (worker->get_queue()->get_queue_type()) {
         	case PackageQueueType::LIFO: {
             	queue_type = "LIFO";
                 break;
