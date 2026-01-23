@@ -65,6 +65,6 @@ void Worker::do_work(Time t) {
 
         if (!queue_->empty()) p_buffer = std::move(queue_->pop());
         else p_buffer = std::nullopt;
-        start_time_ = t;
+        start_time_ = t-1;
     }
 }

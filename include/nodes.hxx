@@ -109,6 +109,10 @@ class Storehouse: public IPackageReceiver {
 public:
     Storehouse(ElementID id, std::unique_ptr<IPackageQueue> d)
         : id_(id), queue_(std::move(d)) {};
+    explicit Storehouse(ElementID id) {
+        id_ = id;
+        queue_ = std::make_unique<PackageQueue>(PackageQueueType::FIFO);
+    }
 
     void receive_package(Package&& p) override {queue_->push(std::move(p));}
     ElementID get_id() const override {return id_;}
