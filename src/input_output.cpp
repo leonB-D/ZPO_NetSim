@@ -144,7 +144,7 @@ void save_factory_structure(const Factory& factory,std::ostream& os) {
                 dest_type = "worker-";
             }
             else if (reciever->first->get_receiver_type() == ReceiverType::STOREHOUSE) {
-                dest_type = "storehouse-";
+                dest_type = "store-";
             }
             os << "LINK src=ramp-" << std::to_string(ramp->get_id()) << " dest=" << dest_type << std::to_string(reciever->first->get_id()) << std::endl;
         }
@@ -156,7 +156,7 @@ void save_factory_structure(const Factory& factory,std::ostream& os) {
                 dest_type = "worker-";
             }
             else if (reciever->first->get_receiver_type() == ReceiverType::STOREHOUSE) {
-                dest_type = "storehouse-";
+                dest_type = "store-";
             }
             os << "LINK src=worker-" << std::to_string(worker->get_id()) << " dest=" << dest_type << std::to_string(reciever->first->get_id()) << std::endl;
         }
