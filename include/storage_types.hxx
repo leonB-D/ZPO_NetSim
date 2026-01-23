@@ -1,3 +1,6 @@
+#ifndef STORAGE_TYPES_HXX
+#define STORAGE_TYPES_HXX
+
 #include <list>
 #include "types.hxx"
 #include "package.hxx"
@@ -69,3 +72,5 @@ private:
     PackageQueueType package_QueueType_;
     std::list<Package> package_list_;
 };
+
+#endif
